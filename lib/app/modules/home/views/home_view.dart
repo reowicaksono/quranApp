@@ -2,43 +2,60 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:quranapp/app/data/models/Surah.dart';
+import 'package:quranapp/app/modules/home/views/home_doa.dart';
+import 'package:quranapp/app/modules/home/views/home_surah.dart';
+import 'package:quranapp/app/routes/app_pages.dart';
 
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+
+    final _tabPages = <Widget>[
+      Center(child: HomeSurah()),
+      Center(child: Icon(Icons.add, size: 20, color: Colors.blue)),
+      Center(child: HomeDoa()),
       
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: FutureBuilder(
-            future: controller.getAllSurah(),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (!snapshot.hasData) {
-                return Text("data not found");
-              }
-              print(snapshot.data);
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  Surah surah = snapshot.data![index];
-                return ListTile(
-                  title: Text("${surah.name!.translation!.id}"), 
-                  subtitle: Text("${surah.numberOfVerses} Surat dari ${surah.revelation!.id}"),
-                  leading: CircleAvatar(child: Text("${surah.number}")),
-                  trailing: Text("${surah.name!.short}"),
-                );
-              });
-            },
+    ];
+
+    final _tabs = <Tab>[
+      Tab(child: Text("Surah", style: TextStyle(color: Colors.black),),),
+      Tab(child: Text("Juz", style: TextStyle(color: Colors.black),),),
+      Tab(child: Text("Doa-doa", style: TextStyle(color: Colors.black),),),
+    ];
+
+    return DefaultTabController(
+      length: _tabs.length,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(180),
+          child: AppBar(
+            
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Quran App', style: TextStyle(color: Colors.black)),
+                Row(children: [
+                  Icon(Icons.notification_add_outlined, color: Colors.amber,),
+                  SizedBox(width: 10,),
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/img/profile.jpg'),
+                  radius: 20,
+                ),
+                ],)
+                
+                ],
+            ),
+            backgroundColor: Colors.white,
+            bottom: TabBar(tabs: _tabs),
+          
           ),
+        ),
+        body: SafeArea(
+          child: TabBarView(children: _tabPages,),
         ),
       ),
     );

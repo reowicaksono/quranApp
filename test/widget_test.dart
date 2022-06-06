@@ -21,6 +21,15 @@ void main() async {
   DetailSurah detailAnnas = DetailSurah.fromJson(dataAnnas);
 
   print(detailAnnas.verses![0].text!.arab);
+
+
+  Uri urlDoa = Uri.parse("https://doa-doa-api-ahmadramadhan.fly.dev/api");
+  var resDoa = await http.get(urlDoa);
+
+  var jsonData = json.decode(resDoa.body);
+
+
+  print(jsonData[0]["id"]);
 }
 
 // // This is a basic Flutter widget test.
