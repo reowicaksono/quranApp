@@ -3,33 +3,39 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:quranapp/app/data/models/DetailSurah.dart';
 import 'package:quranapp/app/data/models/Surah.dart';
+import 'package:quranapp/app/data/models/jadwalShalat.dart';
+import 'package:quranapp/app/data/models/namaKota.dart';
 
 void main() async {
-  Uri url = Uri.parse("https://api.quran.sutanlab.id/surah");
-  var res = await http.get(url);
+  Uri urlKota = Uri.parse("https://api.banghasan.com/sholat/format/json/kota");
+  var resKota = await http.get(urlKota);
 
-  List data = (json.decode(res.body) as Map<String,dynamic>)["data"];
+  var jsonDataKota =
+      (json.decode(resKota.body) as Map<String, dynamic>)["kota"];
 
-  Surah surahAnnas = Surah.fromJson(data[113]);
+  Uri namaKota = Uri.parse(
+      "https://api.banghasan.com/sholat/format/json/kota");
+  var resNamaKota = await http.get(namaKota);
 
+Map<String, dynamic> userdata = json.decode(resNamaKota.body);
 
-  Uri annasUrl = Uri.parse("https://api.quran.sutanlab.id/surah/${surahAnnas.number}");
-  var resAnnas = await http.get(annasUrl);
+  NamaKota namaKota1 = NamaKota.fromJson(userdata);
+  var a = namaKota1.kota![0].id;
 
-  Map<String,dynamic> dataAnnas = (json.decode(resAnnas.body) as Map<String,dynamic>)["data"];
+  // var a = jsonDataNamaKota[0]["id"];
 
-  DetailSurah detailAnnas = DetailSurah.fromJson(dataAnnas);
+  var b = new DateTime.now()
+            .toString()
+            .substring(0,10);
 
-  print(detailAnnas.verses![0].text!.arab);
+  Uri urlJadwalShalat = Uri.parse(
+      "https://api.banghasan.com/sholat/format/json/jadwal/kota/$a/tanggal/$b");
+  var resJadwalShalat = await http.get(urlJadwalShalat);
 
+  var jsonDataJadwalShalat = (json.decode(resJadwalShalat.body) as Map<String, dynamic>)["jadwal"];
+  Jadwalshalat jadwalshalat = Jadwalshalat.fromJson(jsonDataJadwalShalat);
 
-  Uri urlDoa = Uri.parse("https://doa-doa-api-ahmadramadhan.fly.dev/api");
-  var resDoa = await http.get(urlDoa);
-
-  var jsonData = json.decode(resDoa.body);
-
-
-  print(jsonData[0]["id"]);
+   print(jadwalshalat.data!.ashar);
 }
 
 // // This is a basic Flutter widget test.
